@@ -1,0 +1,11 @@
+[Unit]
+Description=DNS Blacholing Service (hazard service)
+Requires=postgresql.service
+After=postgresql.service
+
+[Service]
+Restart=always
+ExecStart=/opt/dns-bh/bin/hazard -cfg-dir=/opt/dns-bh/etc -address=127.0.0.1 -port=8080
+
+[Install]
+WantedBy=multi-user.target

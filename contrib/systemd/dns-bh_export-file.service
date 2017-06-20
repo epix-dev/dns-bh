@@ -1,0 +1,6 @@
+[Unit]
+Description=DNS Blacholing Service (export file)
+
+[Service]
+Type=oneshot
+ExecStart=/opt/dns-bh/bin/export-file -cfg-dir=/opt/dns-bh/etc

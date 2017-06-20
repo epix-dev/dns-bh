@@ -1,0 +1,14 @@
+db:
+  host: 127.0.0.1
+  port: 5432
+  user: dns-bh
+  name: dns-bh_production
+  password:
+
+smtp:
+  host: mail.example.net
+  port: 587
+  user: auth_user
+  password: auth_secret
+  sender: dns-bh@example.net
+  recipient: admin@example.net
