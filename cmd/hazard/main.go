@@ -15,7 +15,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/epix/dns-bh/lib"
+	"github.com/epix-dev/dns-bh/lib"
 
 	_ "github.com/lib/pq"
 )
