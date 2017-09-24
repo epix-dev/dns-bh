@@ -34,4 +34,4 @@ CREATE TABLE whitelist (
     PRIMARY KEY(id)
 );
 
-CREATE UNIQUE INDEX idx_whitelist_1 ON malware(domain) WHERE deleted_at IS NULL;
+CREATE UNIQUE INDEX idx_whitelist_1 ON whitelist(domain) WHERE deleted_at IS NULL;
