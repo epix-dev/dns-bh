@@ -181,15 +181,15 @@ func (s *server) loadRegistry(body []byte, deleteOld bool) {
 	defer db.Close()
 
 	if err := xml.Unmarshal(body, &reg); err != nil {
-		log.Println(err)
-	}
+		log.Printf("unmarshall error: %s\n", err)
+	} else {
+		log.Printf("loaded %d entries\n", len(reg.Positions))
 
-	log.Printf("loaded %d entries\n", len(reg.Positions))
+		lib.ReportChanges(&s.cfg, updateItems(db, reg.Positions), "Added hazard domains")
 
-	lib.ReportChanges(&s.cfg, updateItems(db, reg.Positions), "Added hazard domains")
-
-	if deleteOld == true {
-		lib.ReportChanges(&s.cfg, deleteItems(db, reg.Positions), "Deleted hazard domains")
+		if deleteOld == true {
+			lib.ReportChanges(&s.cfg, deleteItems(db, reg.Positions), "Deleted hazard domains")
+		}
 	}
 }
 
