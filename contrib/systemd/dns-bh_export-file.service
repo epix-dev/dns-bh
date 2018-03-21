@@ -1,5 +1,6 @@
 [Unit]
 Description=DNS Blacholing Service (export file)
+After=network-online.target
 
 [Service]
 Type=oneshot
