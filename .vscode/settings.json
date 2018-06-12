@@ -1,0 +1,4 @@
+{
+  // The Go build tags to use for all commands that support a `-tags '...'` argument
+  "go.buildTags": "libsqlite3 linux",
+}

@@ -1,4 +1,4 @@
-build: prepare export-file hazard malware
+build: prepare export-file hazard malware acl
 
 prepare:
 	mkdir -p build/dns-bh_master/etc build/dns-bh_master/bin
@@ -17,6 +17,9 @@ malware: lib/lib.go cmd/malware/main.go
 
 hazard: lib/lib.go cmd/hazard/main.go
 	go build -o build/dns-bh_master/bin/hazard cmd/hazard/main.go
+
+acl: lib/lib.go cmd/acl/main.go
+	go build --tags "libsqlite3 linux" -o build/dns-bh_master/bin/acl cmd/acl/main.go
 
 clean:
 	go clean
