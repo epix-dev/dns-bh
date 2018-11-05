@@ -14,6 +14,7 @@ import (
 	"path/filepath"
 
 	"github.com/epix-dev/dns-bh/lib"
+	"golang.org/x/net/idna"
 
 	_ "github.com/lib/pq"
 )
@@ -114,8 +115,11 @@ func fileSave(filePath string, d []string) error {
 	sort.Sort(ByLength(d))
 
 	for _, domain := range d {
-		if _, err := tmpfile.WriteString(domain + "\n"); err != nil {
-			return err
+		if domainIDN, err := idna.ToASCII(domain); err == nil {
+
+			if _, err := tmpfile.WriteString(domainIDN + "\n"); err != nil {
+				return err
+			}
 		}
 	}
 
