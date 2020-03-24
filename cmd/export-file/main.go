@@ -19,6 +19,12 @@ import (
 	_ "github.com/lib/pq"
 )
 
+var (
+	version = "dev"
+	build   = "none"
+	author  = "undefined"
+)
+
 const hazardFile = "hazard_domains.txt"
 const malwareFile = "malware_domains.txt"
 
@@ -27,9 +33,11 @@ type ByLength []string
 func (s ByLength) Len() int {
 	return len(s)
 }
+
 func (s ByLength) Swap(i, j int) {
 	s[i], s[j] = s[j], s[i]
 }
+
 func (s ByLength) Less(i, j int) bool {
 	return len(s[i]) < len(s[j])
 }
@@ -159,6 +167,10 @@ func main() {
 	var cfgDir string
 	var outputDir string
 	var cfg lib.Config
+
+	program := filepath.Base(os.Args[0])
+
+	log.Printf("%s started, version: %s+%s, author: %s\n", program, version, build, author)
 
 	flag.StringVar(&cfgDir, "cfg-dir", "/opt/dns-bh/etc", "Config dir path")
 	flag.StringVar(&outputDir, "output-dir", "/etc/powerdns", "Output dir path")

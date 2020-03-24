@@ -13,11 +13,18 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"syscall"
 
 	"github.com/epix-dev/dns-bh/lib"
 
 	_ "github.com/lib/pq"
+)
+
+var (
+	version = "dev"
+	build   = "none"
+	author  = "undefined"
 )
 
 type registryPosition struct {
@@ -235,6 +242,10 @@ func signalHandler(signalChan chan os.Signal, exitChan chan bool, srv *server) {
 func main() {
 	var cfgDir string
 	var srv server
+
+	program := filepath.Base(os.Args[0])
+
+	log.Printf("%s started, version: %s+%s, author: %s\n", program, version, build, author)
 
 	flag.StringVar(&cfgDir, "cfg-dir", "/opt/dns-bh/etc", "Config dir path")
 	flag.StringVar(&srv.address, "address", "127.0.0.1", "Listen address")

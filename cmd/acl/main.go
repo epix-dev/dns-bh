@@ -7,10 +7,17 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 	"regexp"
 	"time"
 
 	_ "github.com/mattn/go-sqlite3"
+)
+
+var (
+	version = "dev"
+	build   = "none"
+	author  = "undefined"
 )
 
 type IPList struct {
@@ -67,7 +74,6 @@ func (acl *IPList) generateACL(db *sql.DB) error {
 		for rows.Next() {
 			if err = rows.Scan(&ip, &seen); err == nil {
 				file.WriteString(fmt.Sprintf("%s\t#%s\n", ip, seen))
-				// fmt.Println(ip)
 			}
 		}
 
@@ -82,6 +88,10 @@ func (acl *IPList) generateACL(db *sql.DB) error {
 
 func main() {
 	var acl IPList
+
+	program := filepath.Base(os.Args[0])
+
+	log.Printf("%s started, version: %s+%s, author: %s\n", program, version, build, author)
 
 	flag.StringVar(&acl.dbFile, "db-file", "/opt/dns-bh/etc/acl.db", "Path to ACL database file")
 	flag.StringVar(&acl.outputFile, "acl-file", "/opt/dns-bh/etc/acl.txt", "Path to ACL output file")

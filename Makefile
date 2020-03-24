@@ -1,26 +1,46 @@
-build: prepare export-file hazard malware acl
+AUTHOR			= Adam Kubica <xcdr@kaizen-step.com>
+BUILD_VERSION	= 0.1.3-beta
+BUILD_BRANCH	= $(shell git rev-parse --abbrev-ref HEAD)
+BUILD_DATE		= $(shell date +%Y%m%d%H%M)
 
-prepare:
-	mkdir -p build/dns-bh_master/etc build/dns-bh_master/bin
-	cp config.yml build/dns-bh_master/etc
+BUILD_DIR		= build
 
-	mkdir -p build/dns-bh_node/etc build/dns-bh_node/bin
-	cp config.yml build/dns-bh_node/etc
+# LDFLAGS			:= -extldflags '-static'
+LDFLAGS			+= -X 'main.author=${AUTHOR}'
+LDFLAGS 		+= -X 'main.version=${BUILD_VERSION}'
+LDFLAGS 		+= -X 'main.build=${BUILD_DATE}.${BUILD_BRANCH}'
 
-	cp -r contrib build/contrib
+.prepare:
+	mkdir -p ${BUILD_DIR}/dns-bh_master/etc ${BUILD_DIR}/dns-bh_master/bin
+	cp config.yml ${BUILD_DIR}/dns-bh_master/etc
 
-export-file: lib/lib.go cmd/export-file/main.go
-	go build -o build/dns-bh_node/bin/export-file cmd/export-file/main.go
+	mkdir -p ${BUILD_DIR}/dns-bh_node/etc ${BUILD_DIR}/dns-bh_node/bin
+	cp config.yml ${BUILD_DIR}/dns-bh_node/etc
 
-malware: lib/lib.go cmd/malware/main.go
-	go build -o build/dns-bh_master/bin/malware cmd/malware/main.go
+	cp -r contrib ${BUILD_DIR}/contrib
 
-hazard: lib/lib.go cmd/hazard/main.go
-	go build -o build/dns-bh_master/bin/hazard cmd/hazard/main.go
+.export-file: cmd/export-file/main.go
+	GOFLAGS=-mod=vendor CGO_ENABLE=0 \
+	go build -a -installsuffix cgo -ldflags "${LDFLAGS}" \
+	-o ${BUILD_DIR}/dns-bh_node/bin/export-file cmd/export-file/main.go
 
-acl: lib/lib.go cmd/acl/main.go
-	go build --tags "libsqlite3 linux" -o build/dns-bh_master/bin/acl cmd/acl/main.go
+.malware: cmd/malware/main.go
+	GOFLAGS=-mod=vendor CGO_ENABLE=0 \
+	go build -a -installsuffix cgo -ldflags "${LDFLAGS}" \
+	-o ${BUILD_DIR}/dns-bh_master/bin/malware cmd/malware/main.go
+
+.hazard: cmd/hazard/main.go
+	GOFLAGS=-mod=vendor CGO_ENABLE=0 \
+	go build -a -installsuffix cgo -ldflags "${LDFLAGS}" \
+	-o ${BUILD_DIR}/dns-bh_master/bin/hazard cmd/hazard/main.go
+
+.acl: cmd/acl/main.go
+	GOFLAGS=-mod=vendor CGO_ENABLE=0 \
+	go build -a -installsuffix cgo -ldflags "${LDFLAGS}" --tags "libsqlite3 linux" \
+	-o ${BUILD_DIR}/dns-bh_master/bin/acl cmd/acl/main.go
+
+build: .prepare .export-file .hazard .malware .acl
 
 clean:
-	go clean
-	rm -rf build
+	GOFLAGS=-mod=vendor go clean
+	rm -rf ${BUILD_DIR}
