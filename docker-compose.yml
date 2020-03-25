@@ -5,6 +5,7 @@ services:
     image: postgres:12-alpine
     volumes:
       - postgres_data:/var/lib/postgresql/data/
+      - ./contrib/database:/docker-entrypoint-initdb.d
     ports:
       - 5432:5432
     environment:
