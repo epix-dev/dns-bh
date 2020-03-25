@@ -181,7 +181,7 @@ func (s *server) loadRegistry(body []byte, deleteOld bool) {
 	var db *sql.DB
 	var reg registry
 
-	db, err = lib.ConnectDb(s.cfg.DB.Host, s.cfg.DB.Port, s.cfg.DB.User, s.cfg.DB.Password, s.cfg.DB.Name)
+	db, err = lib.ConnectDb(s.cfg.DB.Host, s.cfg.DB.Port, s.cfg.DB.User, s.cfg.DB.Password, s.cfg.DB.Name, s.cfg.DB.SSL)
 	if err != nil {
 		log.Fatalln(err)
 	}

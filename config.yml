@@ -2,11 +2,12 @@ db:
   host: 127.0.0.1
   port: 5432
   user: dns-bh
-  name: dns-bh_production
-  password:
+  name: dns-bh
+  password: Secr3t
+  ssl: false
 
 smtp:
-  host: mail.example.net
+  host: 127.0.0.1
   port: 587
   user: auth_user
   password: auth_secret

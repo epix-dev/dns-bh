@@ -18,6 +18,7 @@ type Config struct {
 		User     string
 		Name     string
 		Password string
+		SSL      bool
 	}
 
 	SMTP struct {
@@ -30,13 +31,18 @@ type Config struct {
 	}
 }
 
-func ConnectDb(host string, port int, user string, password string, name string) (*sql.DB, error) {
+func ConnectDb(host string, port int, user string, password string, name string, ssl bool) (*sql.DB, error) {
 	var err error
 	var db *sql.DB
+	var sslMode string = "require"
+
+	if !ssl {
+		sslMode = "disable"
+	}
 
 	dbString := fmt.Sprintf(
-		"host='%s' port=%d user='%s' password='%s' dbname='%s' sslmode=require",
-		host, port, user, password, name)
+		"host='%s' port=%d user='%s' password='%s' dbname='%s' sslmode='%s'",
+		host, port, user, password, name, sslMode)
 
 	if db, err = sql.Open("postgres", dbString); err != nil {
 		return nil, err
@@ -75,6 +81,7 @@ func ConfigInit(dir string) {
 	viper.SetDefault("db.user", "dns-bh")
 	viper.SetDefault("db.name", "dns-bh_development")
 	viper.SetDefault("db.password", "")
+	viper.SetDefault("db.ssl", true)
 
 	viper.SetDefault("smtp.host", "127.0.0.1")
 	viper.SetDefault("smtp.port", "25")
@@ -97,6 +104,7 @@ func ConfigLoad(cfg *Config) bool {
 		cfg.DB.User = viper.GetString("db.user")
 		cfg.DB.Name = viper.GetString("db.name")
 		cfg.DB.Password = viper.GetString("db.password")
+		cfg.DB.SSL = viper.GetBool("db.ssl")
 
 		cfg.SMTP.Host = viper.GetString("smtp.host")
 		cfg.SMTP.Port = viper.GetInt("smtp.port")
@@ -117,7 +125,8 @@ func ReportChanges(cfg *Config, domains []string, subject string) {
 	}
 
 	mailBody := fmt.Sprintf("To: %s\r\n", cfg.SMTP.Recipient) +
-		"Subject: [DNS-BH] changed domains report\r\n" +
+		fmt.Sprintf("From: %s\r\n", cfg.SMTP.Sender) +
+		fmt.Sprintf("Subject: [DNS-BH] %s\r\n", subject) +
 		"\r\n" +
 		fmt.Sprintf("%s:\r\n - %s \r\n", subject, strings.Join(domains, "\r\n - "))
 

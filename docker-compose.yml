@@ -1,0 +1,21 @@
+version: '3'
+
+services:
+  db:
+    image: postgres:12-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_INITDB_ARGS=-E 'UTF-8' --lc-collate='pl_PL.UTF-8' --lc-ctype='pl_PL.UTF-8'
+      - POSTGRES_PASSWORD=Secr3t
+      - POSTGRES_USER=dns-bh
+  mail:
+    image: mailhog/mailhog
+    ports:
+      - 587:1025
+      - 8081:8025
+
+volumes:
+  postgres_data:

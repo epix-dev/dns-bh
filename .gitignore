@@ -1,1 +1,4 @@
 build/*
+*.tar.gz
+*.reload
+*_domains.txt

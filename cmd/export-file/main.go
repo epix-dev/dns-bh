@@ -27,6 +27,7 @@ var (
 
 const hazardFile = "hazard_domains.txt"
 const malwareFile = "malware_domains.txt"
+const certFile = "cert_domains.txt"
 
 type ByLength []string
 
@@ -43,8 +44,9 @@ func (s ByLength) Less(i, j int) bool {
 }
 
 type domains struct {
-	hazard  []string
-	malware []string
+	hazard   []string
+	malware  []string
+	certHole []string
 }
 
 func (d *domains) load(db *sql.DB) error {
@@ -79,6 +81,20 @@ func (d *domains) load(db *sql.DB) error {
 		return err
 	}
 
+	selectSQL = `SELECT domain FROM cert_hole
+				WHERE deleted_at IS NULL AND domain NOT IN (SELECT domain FROM whitelist WHERE deleted_at IS NULL) ORDER BY 1`
+
+	if rows, err := db.Query(selectSQL); err == nil {
+		for rows.Next() {
+			if err = rows.Scan(&domain); err == nil {
+				d.certHole = append(d.certHole, domain)
+			}
+		}
+		rows.Close()
+	} else {
+		return err
+	}
+
 	return nil
 }
 
@@ -91,7 +107,7 @@ func fileMD5(filePath string) (string, error) {
 
 	file, err := os.Open(filePath)
 	if err != nil {
-		return MD5String, err
+		return MD5String, nil
 	}
 	defer file.Close()
 
@@ -181,7 +197,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	db, err = lib.ConnectDb(cfg.DB.Host, cfg.DB.Port, cfg.DB.User, cfg.DB.Password, cfg.DB.Name)
+	db, err = lib.ConnectDb(cfg.DB.Host, cfg.DB.Port, cfg.DB.User, cfg.DB.Password, cfg.DB.Name, cfg.DB.SSL)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -202,4 +218,10 @@ func main() {
 	}
 
 	log.Printf("saved malware domains: %d", len(dom.malware))
+
+	if err = fileSave(filepath.Join(outputDir, certFile), dom.certHole); err != nil {
+		log.Fatalln(err)
+	}
+
+	log.Printf("saved cert hole domains: %d", len(dom.malware))
 }
