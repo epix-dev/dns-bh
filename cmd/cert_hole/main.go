@@ -40,8 +40,11 @@ func (m *TimeWithoutTZ) UnmarshalJSON(data []byte) error {
 	return err
 }
 
-func (m *TimeWithoutTZ) Value() (driver.Value, error) {
-	return m.Time.String(), nil
+func (m TimeWithoutTZ) Value() (driver.Value, error) {
+	if m.Valid == false {
+		return nil, nil
+	}
+	return driver.Value(m.Time.Format(`"2006-01-02T15:04:05"`)), nil
 }
 
 type domain struct {
@@ -106,13 +109,8 @@ func updateItems(db *sql.DB, items []domain) []string {
 	defer updateStmt.Close()
 
 	for _, item := range items {
-		// TODO: refactor workarounds for TimeWithoutTZ
 
-		var deleteTime sql.NullTime
-		deleteTime.Time = item.DeleteTime.Time
-		deleteTime.Valid = item.DeleteTime.Valid
-
-		updateRes, err := updateStmt.Exec(item.RegisterPositionID, deleteTime)
+		updateRes, err := updateStmt.Exec(item.RegisterPositionID, item.DeleteTime)
 		lib.CheckError(err)
 
 		if affect, _ := updateRes.RowsAffected(); affect == 0 {
@@ -120,7 +118,7 @@ func updateItems(db *sql.DB, items []domain) []string {
 				item.RegisterPositionID,
 				item.Domain,
 				item.InsertTime.Time,
-				deleteTime)
+				item.DeleteTime)
 			lib.CheckError(err)
 
 			log.Printf("added %d:%s", item.RegisterPositionID, item.Domain)
