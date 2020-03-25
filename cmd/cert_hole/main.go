@@ -41,7 +41,7 @@ func (m *TimeWithoutTZ) UnmarshalJSON(data []byte) error {
 }
 
 func (m *TimeWithoutTZ) Value() (driver.Value, error) {
-	return m.Time.String(), nil
+	return m.Time, nil
 }
 
 type domain struct {

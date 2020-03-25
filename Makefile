@@ -17,7 +17,7 @@ LDFLAGS 		+= -X 'main.build=${BUILD_DATE}.${BUILD_BRANCH}'
 	mkdir -p ${BUILD_DIR}/dns-bh_node/etc ${BUILD_DIR}/dns-bh_node/bin
 	cp config.yml ${BUILD_DIR}/dns-bh_node/etc
 
-	cp -r contrib ${BUILD_DIR}/contrib
+	cp -r contrib ${BUILD_DIR}/
 
 .export-file: cmd/export-file/main.go
 	GOFLAGS=-mod=vendor CGO_ENABLE=0 \
@@ -44,7 +44,7 @@ LDFLAGS 		+= -X 'main.build=${BUILD_DATE}.${BUILD_BRANCH}'
 	go build -a -installsuffix cgo -ldflags "${LDFLAGS}" --tags "libsqlite3 linux" \
 	-o ${BUILD_DIR}/dns-bh_master/bin/acl cmd/acl/main.go
 
-build: .prepare .export-file .hazard .malware .acl
+build: .prepare .export-file .hazard .malware .acl .cert_hole
 
 tar-file: build
 	tar czf dns-bh-${BUILD_VERSION}-bin.tar.gz -C build .
