@@ -1,0 +1,8 @@
+[Unit]
+Description=DNS Blacholing Service (cert_hole update)
+Requires=postgresql.service
+After=postgresql.service
+
+[Service]
+Type=oneshot
+ExecStart=/opt/dns-bh/bin/cert_hole -cfg-dir=/opt/dns-bh/etc
