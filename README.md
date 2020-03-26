@@ -50,12 +50,17 @@ Install systemd services:
 
     cp build/contrib/systemd/dns-bh_hazard.* /etc/systemd/system
     cp build/contrib/systemd/dns-bh_malware.* /etc/systemd/system
+    cp build/contrib/systemd/dns-bh_cert_hole.* /etc/systemd/system
 
     systemctl enable dns-bh_hazard.service
     systemctl start dns-bh_hazard.service
 
     systemctl enable dns-bh_malware.timer
     systemctl start dns-bh_malware.timer
+
+    systemctl enable dns-bh_cert_hole.timer
+    systemctl start dns-bh_cert_hole.timer
+
 
 Example crontab entry which force PULL request every day at midnight
 
@@ -122,3 +127,4 @@ My sources are licensed under MIT license, other sources might have it's own lic
 - https://doc.powerdns.com/md/recursor/scripting/#helpful-functions
 - https://github.com/PowerDNS/pdns/blob/master/pdns/powerdns-example-script.lua
 - http://www.finanse.mf.gov.pl/inne-podatki/podatek-od-gier-gry-hazardowe/komunikaty/-/asset_publisher/d3oA/content/konsultacje-specyfikacji-technicznej-interfejsu-oraz-specyfikacji-wejscia-wyjscia-dla-rejestru-domen-sluzacych-do-oferowania-gier-hazardowych-niezgodnie-z-ustawa
+- https://hole.cert.pl/schema/certpl_lista_ostrzezen_api_v1.pdf

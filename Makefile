@@ -1,5 +1,5 @@
 AUTHOR			= Adam Kubica <xcdr@kaizen-step.com>
-BUILD_VERSION	= 0.1.3-beta
+BUILD_VERSION	= 0.2.0-beta
 BUILD_BRANCH	= $(shell git rev-parse --abbrev-ref HEAD)
 BUILD_DATE		= $(shell date +%Y%m%d%H%M)
 
@@ -17,12 +17,17 @@ LDFLAGS 		+= -X 'main.build=${BUILD_DATE}.${BUILD_BRANCH}'
 	mkdir -p ${BUILD_DIR}/dns-bh_node/etc ${BUILD_DIR}/dns-bh_node/bin
 	cp config.yml ${BUILD_DIR}/dns-bh_node/etc
 
-	cp -r contrib ${BUILD_DIR}/contrib
+	cp -r contrib ${BUILD_DIR}/
 
 .export-file: cmd/export-file/main.go
 	GOFLAGS=-mod=vendor CGO_ENABLE=0 \
 	go build -a -installsuffix cgo -ldflags "${LDFLAGS}" \
 	-o ${BUILD_DIR}/dns-bh_node/bin/export-file cmd/export-file/main.go
+
+.acl: cmd/acl/main.go
+	GOFLAGS=-mod=vendor CGO_ENABLE=0 \
+	go build -a -installsuffix cgo -ldflags "${LDFLAGS}" --tags "libsqlite3 linux" \
+	-o ${BUILD_DIR}/dns-bh_node/bin/acl cmd/acl/main.go
 
 .malware: cmd/malware/main.go
 	GOFLAGS=-mod=vendor CGO_ENABLE=0 \
@@ -34,12 +39,15 @@ LDFLAGS 		+= -X 'main.build=${BUILD_DATE}.${BUILD_BRANCH}'
 	go build -a -installsuffix cgo -ldflags "${LDFLAGS}" \
 	-o ${BUILD_DIR}/dns-bh_master/bin/hazard cmd/hazard/main.go
 
-.acl: cmd/acl/main.go
+.cert_hole: cmd/cert_hole/main.go
 	GOFLAGS=-mod=vendor CGO_ENABLE=0 \
-	go build -a -installsuffix cgo -ldflags "${LDFLAGS}" --tags "libsqlite3 linux" \
-	-o ${BUILD_DIR}/dns-bh_master/bin/acl cmd/acl/main.go
+	go build -a -installsuffix cgo -ldflags "${LDFLAGS}" \
+	-o ${BUILD_DIR}/dns-bh_master/bin/cert_hole cmd/cert_hole/main.go
 
-build: .prepare .export-file .hazard .malware .acl
+build: .prepare .export-file .hazard .malware .acl .cert_hole
+
+tar-file: build
+	tar czf dns-bh-${BUILD_VERSION}-bin.tar.gz -C build .
 
 clean:
 	GOFLAGS=-mod=vendor go clean

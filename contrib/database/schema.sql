@@ -35,3 +35,17 @@ CREATE TABLE whitelist (
 );
 
 CREATE UNIQUE INDEX idx_whitelist_1 ON whitelist(domain) WHERE deleted_at IS NULL;
+
+CREATE TABLE cert_hole (
+    id SERIAL,
+    remote_id INTEGER NOT NULL,
+    domain VARCHAR(255) NOT NULL,
+    insert_time TIMESTAMP NOT NULL,
+    delete_time TIMESTAMP,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP,
+    deleted_at TIMESTAMP,
+    PRIMARY KEY(id)
+);
+
+CREATE UNIQUE INDEX idx_cert_hole_1 ON cert_hole(domain) WHERE deleted_at IS NULL;
