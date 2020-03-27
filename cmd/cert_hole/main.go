@@ -23,10 +23,7 @@ var (
 	author  = "undefined"
 )
 
-type TimeWithoutTZ struct {
-	time.Time
-	Valid bool
-}
+type TimeWithoutTZ sql.NullTime
 
 func (m *TimeWithoutTZ) UnmarshalJSON(data []byte) error {
 	// Ignore null, like in the main JSON package.
