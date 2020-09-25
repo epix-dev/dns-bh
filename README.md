@@ -126,5 +126,5 @@ My sources are licensed under MIT license, other sources might have it's own lic
 
 - https://doc.powerdns.com/md/recursor/scripting/#helpful-functions
 - https://github.com/PowerDNS/pdns/blob/master/pdns/powerdns-example-script.lua
-- http://www.finanse.mf.gov.pl/inne-podatki/podatek-od-gier-gry-hazardowe/komunikaty/-/asset_publisher/d3oA/content/konsultacje-specyfikacji-technicznej-interfejsu-oraz-specyfikacji-wejscia-wyjscia-dla-rejestru-domen-sluzacych-do-oferowania-gier-hazardowych-niezgodnie-z-ustawa
+- https://finanse-arch.mf.gov.pl/web/wp/inne-podatki/podatek-od-gier-gry-hazardowe/rejestr-domen/-/asset_publisher/d3oA/content/specyfikacja-techniczna-interfejsu-oraz-specyfikacja-wejscia-wyjscia-dla-rejestru-domen-sluzacych-do-oferowania-gier-hazardowych-niezgodnie-z-ustawa
 - https://hole.cert.pl/schema/certpl_lista_ostrzezen_api_v1.pdf
