@@ -5,8 +5,12 @@ hazard_response_a = "127.0.0.1"
 -- user config --
 
 hazard = newDS()
+hazard_entries = {}
+i = 1
 for line in io.lines("/etc/powerdns/hazard_domains.txt") do
     hazard:add {line}
+    hazard_entries[i] = line
+    i = i + 1
 end
 
 malware = newDS()
@@ -20,28 +24,34 @@ for line in io.lines("/etc/powerdns/cert_domains.txt") do
 end
 
 function preresolve(dq)
+
     if hazard:check(dq.qname) then
-        if dq.qtype == pdns.A then
-            log_entry =
-                string.format(
-                "hazard domain query type %s from %s, (REWRITE): %s",
-                dq.qtype,
-                dq.remoteaddr:toString(),
-                dq.qname:toString()
-            )
-            pdnslog(log_entry, pdns.loglevels.Info)
-            dq:addAnswer(pdns.A, hazard_response_a)
-            return true
-        else
-            log_entry =
-                string.format(
-                "hazard domain query type %s from %s, (NODATA): %s",
-                dq.qtype,
-                dq.remoteaddr:toString(),
-                dq.qname:toString()
-            )
-            pdnslog(log_entry, pdns.loglevels.Info)
-            dq.appliedPolicy.policyKind = pdns.policykinds.NODATA
+		dq_qname_str = dq.qname:toStringNoDot()
+		for index, entry in ipairs(hazard_entries) do
+			if dq_qname_str == entry then
+				if dq.qtype == pdns.A then
+					log_entry = 
+						string.format(
+						"hazard domain query type %s from %s, (REWRITE): %s",
+						dq.qtype,
+						dq.remoteaddr:toString(),
+						dq.qname:toString()
+					)
+					pdnslog(log_entry, pdns.loglevels.Info)
+					dq:addAnswer(pdns.A, hazard_response_a)
+					return true;
+				else
+					log_entry = 
+						string.format(
+						"hazard domain query type %s from %s, (NODATA): %s",
+						dq.qtype,
+						dq.remoteaddr:toString(),
+						dq.qname:toString()
+					)
+					pdnslog(log_entry, pdns.loglevels.Info)
+					dq.appliedPolicy.policyKind = pdns.policykinds.NODATA
+				end
+            end
         end
     end
 
